@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #code {
+        border: 1px solid red;
+        height: 500px;
+        display: block;
+        width: 90%;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    判断是否符合promise A+ 基础规范
+    <textarea name="" cols="30" rows="10" id="code">
+        function isPromiseLike(value) {
+            return (
+              value !== null &&
+              (typeof value === "object" || typeof value === "funtion") &&
+              typeof value.then === "funtion"
+            );
+        }
+    </textarea>
+    <script>
+      const code = document.querySelector("#code");
+      eval(code.value);
+    </script>
+  </body>
+</html>

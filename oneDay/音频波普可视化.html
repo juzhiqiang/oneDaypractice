@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      canvas {
+        width: 100%;
+        height: 300px;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <audio
+      controls
+      src="./resources/test.mp3"
+    ></audio>
+    <script>
+      // 获取canvas
+      let canvas = document.querySelector("canvas");
+      let ctx = canvas.getContext("2d");
+      // 获取音乐
+      let audio = document.querySelector("audio");
+
+      //   初始化canvas
+      function initCanvas() {
+        canvas.width = window.innerWidth * devicePixelRatio;
+        canvas.height = (window.innerHeight / 2) * devicePixelRatio;
+      }
+      initCanvas();
+
+      let isInit = false;
+      let dataArray, analyser;
+      audio.onplay = function () {
+        if (isInit) return;
+
+        // 初始化 音频上下文
+        const audioContext = new AudioContext();
+        // 获取音频节点
+        const sourcess = audioContext.createMediaElementSource(audio);
+        // 获取分析器节点,默认使用快速傅里叶方法，对称方案
+        analyser = audioContext.createAnalyser();
+        // 需要2的N次幂，越大分析越清晰
+        analyser.fftSize = 512;
+        // // 数组接收分析器节点的分析数据
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        console.log(dataArray);
+        sourcess.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        isInit = true;
+      };
+
+      function draw() {
+        requestAnimationFrame(draw);
+        const { width, height } = canvas;
+        ctx.clearRect(0, 0, width, height);
+        if (!isInit) return;
+
+        // 让分析器节点分析出的结果数据到数组中
+        analyser.getByteFrequencyData(dataArray);
+        const barWidth = width / dataArray.length;
+        ctx.fillStyle = "red";
+        for (let i = 0; i < dataArray.length; i++) {
+          const data = dataArray[i];
+          const barHeight = (data / 255) * height;
+          const x = i * barWidth;
+          const y = height - barHeight;
+          ctx.fillRect(x, y, barWidth - 2, barHeight);
+        }
+      }
+
+      draw();
+    </script>
+  </body>
+</html>
