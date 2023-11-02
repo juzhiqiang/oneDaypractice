@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #code {
+        border: 1px solid red;
+        height: 500px;
+        display: block;
+        width: 90%;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    // 声明私有属性,js中使用#会默认为私有属性 
+    <textarea name=""  cols="30" rows="10" id="code">
+        class Test { 
+            #test;
+            constructor() { 
+                this.#test = 1; 
+            } 
+            #method() {} 
+        } 
+        
+        let a = new Test();
+        console.log(a);
+    </textarea>
+    <script>
+      const code = document.querySelector("#code");
+      eval(code.innerHTML);
+    </script>
+  </body>
+</html>
