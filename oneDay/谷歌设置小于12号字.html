@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        font-size: 12px;
+      }
+      .box {
+        border: 1px solid red;
+      }
+      .smallSize {
+        /* 设计基础字号20 方便计算 */
+        font-size: 20px;
+        /* 利用缩放原理 */
+        transform: scale(0.5);
+        /* 因为缩放原点默认是中心 原点要调整为左边 */
+        transform-origin: left;
+      }
+    </style>
+  </head>
+  <body>
+    利用子div撑起父div高度可以轻易看出缩放后其实还是占了缩放前空间的
+    <div class="box">
+      <div class="smallSize">小于12号字体我是10号字体</div>
+    </div>
+  </body>
+</html>
