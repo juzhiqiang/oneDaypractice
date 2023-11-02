@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      /* 利用webkit描边属性 有浏览器兼容情况 */
+      .stroke {
+        -webkit-text-stroke: 2px red;
+        color: #000;
+        font-size: 120px;
+      }
+
+      /* 通过文字阴影描边 方案兼容性更好 */
+      .stroke1 {
+        font-size: 120px;
+        text-shadow: 0 2px red, 0 -2px red, -2px 2px red, 2px 2px red,
+          -2px 0 red, 2px 0 red;
+      }
+    </style>
+  </head>
+  <body>
+    利用webkit描边属性
+    <div class="stroke">测试文字</div>
+    通过文字阴影描边
+    <div class="stroke1">测试文字</div>
+  </body>
+</html>
