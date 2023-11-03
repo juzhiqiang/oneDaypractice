@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      canvas {
+        width: 100%;
+        height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <script>
+      const dom = document.querySelector("canvas");
+      const ctx = dom.getContext("2d");
+
+      ctx.fillStyle = "red";
+      ctx.strokeStyle = "yellow";
+      ctx.lineWidth = 10;
+      ctx.strokeRect(0, 0, 100, 100);
+      ctx.fillRect(5, 5, 95, 95);
+    </script>
+  </body>
+</html>
