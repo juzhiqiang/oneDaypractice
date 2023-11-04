@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    // 1. 通过defineProperty监听属性得深度遍历绑定所有属性
+    const definePropertyData = {
+      a: 1,
+      b: 2,
+      c: { d: 1, e: 2 },
+    };
+
+    function _isObject(v) {
+      return typeof v === "object" && v !== null;
+    }
+
+    function observe(obj) {
+      for (const key in obj) {
+        let v = obj[key];
+        if (_isObject(v)) {
+          observe(v);
+        }
+
+        Object.defineProperty(obj, key, {
+          get() {
+            console.log("获取", key);
+            return v;
+          },
+          set(value) {
+            if (value !== v) {
+              console.log(key, "变化");
+              v = value;
+            }
+          },
+        });
+      }
+    }
+
+    // 观察者,在一开始就固定了 中考对象中内容发生变更无法知道
+    observe(definePropertyData);
+
+    definePropertyData.a = 12;
+
+    // 2. proxy
+    const proxyData = {
+      a: 1,
+      b: 2,
+      c: { d: 1, e: 2 },
+    };
+    const proxy = new Proxy(proxyData, {
+      get(target, k) {
+        let v = target[k];
+        console.log("代理读取", k);
+        return v;
+      },
+      set(target, k, value) {
+        let v = target[k];
+        if (value !== v) {
+          console.log(key, "代理变化");
+          target[k] = value;
+        }
+      },
+    });
+
+    proxy.a
+  </script>
+</html>
