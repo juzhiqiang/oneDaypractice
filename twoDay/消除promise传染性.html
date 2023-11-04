@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 消除promise 传染性
+      function getData() {
+        return fetch("http://apijson.cn:8080/login", {
+          method: "POST",
+          body: JSON.stringify({}),
+        });
+      }
+
+      function m1() {
+        return getData();
+      }
+
+      function m2() {
+        return m1();
+      }
+
+      function main() {
+        const data = m2();
+        console.log(data);
+      }
+      // 要求上面代码最后能打印出m3的值，不能使用await
+
+      function run(func) {
+        // 多次调用存储
+        let cache = [];
+        let i = 0;
+        const _oldFecth = window.fetch;
+        window.fetch = (...arg) => {
+          if (cache[i]) {
+            if (cache[i].status === "fulfilled") {
+              return cache[i].data;
+            } else if (cache[i].status === "rejected") {
+              throw cache[i].err;
+            }
+          }
+
+          const result = {
+            status: "pending",
+            data: null,
+            err: null,
+          };
+
+          cache[i++] = result;
+
+          // 发送请求
+          const prom = _oldFecth(...arg)
+            .then((res) => res.json())
+            .then(
+              (res) => {
+                result.status = "fulfilled";
+                result.data = res;
+              },
+              (err) => {
+                result.status = "rejected";
+                result.err = err;
+              }
+            );
+
+          // 抛出错误强行结束第一次请求
+          throw prom;
+        };
+
+        try {
+          func();
+        } catch (error) {
+          if (error instanceof Promise) {
+            const reRun = () => {
+              i = 0;
+              func();
+            };
+            error.then(reRun, reRun);
+          }
+        }
+      }
+
+      run(main);
+    </script>
+  </body>
+</html>
