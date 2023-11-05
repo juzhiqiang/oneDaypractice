@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .header {
+        height: 300px;
+        background: #000;
+        color: #fff;
+      }
+      .playground {
+        height: 1700px;
+        background: yellowgreen;
+      }
+
+      .ainimation-container {
+        height: 1000px;
+        position: relative;
+      }
+
+      .list {
+        display: flex;
+        position: sticky;
+        top: 0;
+        height: 100px;
+      }
+
+      .list-item {
+        width: 50px;
+        height: 30px;
+        background: red;
+        margin: 20px;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">头部</div>
+    <div class="playground">
+      <div class="ainimation-container">
+        <div class="list">
+          <div data-order="0" class="list-item"></div>
+          <div data-order="1" class="list-item"></div>
+          <div data-order="2" class="list-item"></div>
+          <div data-order="3" class="list-item"></div>
+          <div data-order="4" class="list-item"></div>
+          <div data-order="5" class="list-item"></div>
+          <div data-order="6" class="list-item"></div>
+          <div data-order="7" class="list-item"></div>
+          <div data-order="8" class="list-item"></div>
+          <div data-order="9" class="list-item"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const items = document.querySelectorAll(".list-item");
+      const palyGround = document.querySelector(".playground");
+      const list = document.querySelector(".list");
+
+      //   创建动画
+      const createAnimation = (
+        scrollStart,
+        scrollEnd,
+        valueStart,
+        valueEnd
+      ) => {
+        return (scroll) => {
+          if (scroll <= scrollStart) return valueStart;
+
+          if (scroll >= scrollEnd) return valueEnd;
+          return (
+            valueStart +
+            ((valueEnd - valueStart) * (scroll - scrollStart)) /
+              (scrollEnd - scrollStart)
+          );
+        };
+      };
+
+      //   记录动画行为
+      const animationMap = new Map();
+
+      //   获得dom动画帧
+      const getDomAnimation = (scrollStart, scrollEnd, dom) => {
+        scrollStart = scrollStart + dom.dataset.order * 100;
+        const opacityAnimation = createAnimation(scrollStart, scrollEnd, 0, 1);
+
+        const opacity = (scroll) => {
+          return opacityAnimation(scroll);
+        };
+
+        const scaleAnimation = (scroll) =>
+          createAnimation(scrollStart, scrollEnd, 0.5, 1);
+        const xAnimation = createAnimation(
+          scrollStart,
+          scrollEnd,
+          list.clientWidth / 2 - dom.offsetLeft - dom.clientWidth / 2,
+          0
+        );
+
+        const yAnimation = createAnimation(
+          scrollStart,
+          scrollEnd,
+          list.clientHeight / 2 - dom.offsetTop - dom.clientHeight / 2,
+          0
+        );
+
+        const transform = (scroll) => {
+          return `translate(${xAnimation(scroll)}px,${yAnimation(
+            scroll
+          )}px) scale(${scaleAnimation()(scroll)})`;
+        };
+        return {
+          opacity,
+          transform,
+        };
+      };
+
+      const updateMap = () => {
+        animationMap.clear();
+        const playGroundRect = palyGround.getBoundingClientRect();
+        const scrollStart = playGroundRect.top + window.screenY;
+        const scrollEnd =
+          playGroundRect.bottom + window.screenY - window.innerHeight;
+        for (const item of items) {
+          animationMap.set(item, getDomAnimation(scrollStart, scrollEnd, item));
+        }
+      };
+
+      updateMap();
+
+      function updateStyles() {
+        const scroll = window.scrollY;
+        for (const [dom, value] of animationMap) {
+          for (const cssProps in value) {
+            dom.style[cssProps] = value[cssProps](scroll);
+          }
+        }
+      }
+
+      window.addEventListener("scroll", updateStyles);
+    </script>
+  </body>
+</html>
