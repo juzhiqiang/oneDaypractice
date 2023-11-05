@@ -51,21 +51,31 @@
       b: 2,
       c: { d: 1, e: 2 },
     };
-    const proxy = new Proxy(proxyData, {
-      get(target, k) {
-        let v = target[k];
-        console.log("代理读取", k);
-        return v;
-      },
-      set(target, k, value) {
-        let v = target[k];
-        if (value !== v) {
-          console.log(key, "代理变化");
-          target[k] = value;
-        }
-      },
-    });
 
-    proxy.a
+    function observe1(data) {
+      const proxy = new Proxy(data, {
+        get(target, k) {
+          let v = target[k];
+          if (_isObject(v)) {
+            observe1(v);
+          }
+          console.log("代理读取", k);
+          return v;
+        },
+        set(target, k, value) {
+          let v = target[k];
+          if (value !== v) {
+            console.log(key, "代理变化");
+            target[k] = value;
+          }
+        },
+      });
+
+      return proxy;
+    }
+
+    const proxy = observe1(proxyData);
+
+    proxy.a;
   </script>
 </html>

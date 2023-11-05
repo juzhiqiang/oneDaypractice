@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const PENDING = "pending";
+      const REJECTED = "rejected";
+      const FULFILLED = "fulfilled";
+
+      class MyPromise {
+        #status = PENDING;
+        #result = undefined;
+        #handle = [];
+
+        constructor(executor) {
+          const reject = (reason) => {
+            this.#changeState(REJECTED, reason);
+          };
+
+          const resolve = (data) => {
+            this.#changeState(FULFILLED, data);
+          };
+
+          try {
+            executor(resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
+        }
+
+        // 返回内容
+        #changeState(state, result) {
+          if (this.#status !== PENDING) return;
+          this.#status = state;
+          this.#result = result;
+          this.#run();
+        }
+        // 判断是否符合promise A规范
+        #isPromiseLike(value) {
+          return (
+            value !== null &&
+            (typeof value === "object" || typeof value === "funtion") &&
+            typeof value.then === "funtion"
+          );
+        }
+
+        #runMicroTask(func) {
+          setTimeout(() => func, 0);
+        }
+
+        #runOne(callback, resolve, reject) {
+          this.#runMicroTask(() => {
+            if (typeof callback !== "function") {
+              const settled = this.#status === FULFILLED ? resolve : reject;
+              settled(this.#result);
+              return;
+            }
+
+            try {
+              const data = callback(this.#result);
+              if (this.#isPromiseLike(data)) {
+                data.then(resolve, reject);
+              } else {
+                resolve(data);
+              }
+            } catch (error) {
+              reject(error);
+            }
+          });
+        }
+
+        #run() {
+          if (this.#status === PENDING) return;
+          while (this.#handle.length) {
+            const { onFulfilled, onRejected, resolve, reject } =
+              this.#handle.shift();
+            if (this.#status === FULFILLED) {
+              this.#runOne(onFulfilled, resolve, reject);
+            } else {
+              this.#runOne(onRejected, resolve, reject);
+            }
+          }
+        }
+
+        then(onFulfilled, onRejected) {
+          return new MyPromise((resolve, reject) => {
+            this.#handle.push({
+              onFulfilled,
+              onRejected,
+              resolve,
+              reject,
+            });
+
+            this.#run();
+          });
+        }
+      }
+
+      const a = new MyPromise((resolve, reject) => {
+        resolve(123);
+      });
+      a.then(
+        (res) => {
+          console.log("完成", res);
+        },
+        (err) => {
+          console.log("失败", err);
+        }
+      );
+    </script>
+  </body>
+</html>
