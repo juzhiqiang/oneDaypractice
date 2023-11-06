@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #dog {
+        border: 1px solid rebeccapurple;
+      }
+      #dog::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="dog.showModal()">弹窗</button>
+    <dialog id="dog">
+      <div class="win">
+        <p>弹窗内容</p>
+        <button onclick="dog.close()">关闭</button>
+      </div>
+    </dialog>
+
+    <script>
+      const btn = document.querySelector("button");
+    </script>
+  </body>
+</html>
