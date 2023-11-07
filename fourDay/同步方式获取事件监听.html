@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button>按钮</button>
+    <script>
+      // 同步的方式实现事件监听
+      function getElement(cssSekectir) {
+        const dom = document.querySelector(cssSekectir);
+        const domProxy = new Proxy(dom, {
+          get(target, key) {
+            if (!key.startsWith("wait")) {
+              return target[key];
+            }
+
+            // 获取到对应事件
+            const event = key.replace("wait", "").toLowerCase();
+
+            return new Promise((resolve) => {
+              // 监听事件
+              target.addEventListener(event, resolve, { once: true });
+            });
+          },
+        });
+        return domProxy;
+      }
+      (async function () {
+        const btn = getElement("button");
+        while (1) {
+          await btn.waitClick;
+          console.log("按钮被点击了");
+        }
+      })();
+    </script>
+  </body>
+</html>
