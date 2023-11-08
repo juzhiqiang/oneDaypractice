@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background: #ccc;
+        margin: 0;
+      }
+      .box {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        position: relative;
+        padding: 50px;
+      }
+      .pointer {
+        position: absolute;
+        --t: 3px;
+        --l: 30px;
+        --g: 15px;
+        --s: 300px;
+        --x: 0;
+        --y: 0;
+        width: calc(var(--s) + 2 * var(--g));
+        height: calc(var(--s) + 2 * var(--g));
+        margin: calc(var(--g) * 1) 0 0 calc(var(--g) * -1);
+        border: var(--t) solid #fff;
+        transform: translate(calc(var(--x) - 50px), calc(var(--y) - 80px));
+        transition: 0.5s;
+        -webkit-mask: conic-gradient(
+            at var(--l) var(--l),
+            transparent 75%,
+            blue 75% 100%
+          )
+          0 0 / calc(100% - var(--l)) calc(100% - var(--l));
+      }
+      img {
+        width: 300px;
+        margin-top: 30px;
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="pointer"></div>
+      <img
+        src="https://img0.baidu.com/it/u=3139902124,3387928882&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1699549200&t=042b1de4e686943ba4a9acb4b4d51dcd"
+        alt=""
+      /><img
+        src="https://img1.baidu.com/it/u=2508381239,2324251691&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1699549200&t=8f830385eb6b91a78277075e2119090a"
+        alt=""
+      /><img
+        src="https://img1.baidu.com/it/u=2091640942,1648288978&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1699549200&t=c5ab8010b5b03e65bf93be99cdca4d7c"
+        alt=""
+      /><img
+        src="https://img2.baidu.com/it/u=3673010870,2493779584&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1699549200&t=f6f12e4893a1598effca3c57400e29d2"
+        alt=""
+      /><img
+        src="https://img1.baidu.com/it/u=2790304584,1258411054&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1699549200&t=f291e5bdeab34ed6da34e9b789ea72a4"
+        alt=""
+      /><img
+        src="https://img2.baidu.com/it/u=3344911223,3409692090&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1699549200&t=36fe9bab09aa7c89d7bf8ae063163e38"
+        alt=""
+      />
+    </div>
+
+    <script>
+      const imgs = document.querySelectorAll("img");
+      const pointer = document.querySelector(".pointer");
+      console.log(imgs);
+      for (const img of imgs) {
+        img.onmouseenter = () => {
+          console.log(img.clientLeft);
+          const s = img.offsetWidth;
+          const x = img.offsetLeft;
+          const y = img.offsetTop;
+          pointer.style.setProperty("--x", x + "px");
+          pointer.style.setProperty("--s", s + "px");
+          pointer.style.setProperty("--y", y + "px");
+        };
+      }
+    </script>
+  </body>
+</html>
