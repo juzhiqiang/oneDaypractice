@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="file" />
+
+    <script>
+      function drawVideo(vdo) {
+        return new Promise((resolve, reject) => {
+          // 开始截图
+          const canvas = document.createElement("canvas");
+          canvas.width = vdo.videoWidth;
+          canvas.height = vdo.videoHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(vdo, 0, 0, canvas.width, canvas.height);
+          // 截图完成
+          const blob = canvas.toBlob((blob) => {
+            resolve({
+              url: URL.createObjectURL(blob),
+              blob: blob,
+            });
+          });
+        });
+      }
+
+      function captureFrame(videoFile, time = 0) {
+        return new Promise((resolve, reject) => {
+          const vdo = document.createElement("video");
+          vdo.currentTime = time;
+          // 只要没加入到页面只会播放当前一帧
+          vdo.muted = true;
+          vdo.autoplay = true;
+          vdo.oncanplay = async () => {
+            resolve(await drawVideo(vdo));
+          };
+          vdo.src = URL.createObjectURL(videoFile);
+        });
+      }
+
+      const input = document.querySelector("input[type=file]");
+
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        for (let i = 0; i < 10; i++) {
+          createPreview(await captureFrame(file, i));
+        }
+      };
+
+      function createPreview(frame) {
+        const img = document.createElement("img");
+        img.src = frame.url;
+        document.body.appendChild(img);
+      }
+    </script>
+  </body>
+</html>
