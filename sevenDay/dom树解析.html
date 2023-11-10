@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function removeTag(fragment) {
+        return (
+          new DOMParser().parseFromString(fragment, "text/html").body
+            .textContent || ""
+        );
+      }
+
+      console.log(removeTag(`<div>test</div>`))
+    </script>
+  </body>
+</html>
