@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <input type="file" />
+      上传图片
+    </div>
+    <button id="btn">预览图片</button>
+    <div>
+      <img id="preview" />
+    </div>
+
+    <script>
+      // 实现本地预览
+      const input = document.querySelector("input");
+      const preview = document.querySelector("img");
+      const btn = document.querySelector("button");
+
+      input.onchange = function () {
+        const file = this.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      };
+
+      //   获取裁剪后的数据、
+      function cut() {
+        const cutInfo = {
+          x: 10,
+          y: 20,
+          oldWidth: 192,
+          oldHeight: 192,
+          width: 80,
+          height: 80,
+        };
+
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = cutInfo.width;
+        canvas.height = cutInfo.height;
+        ctx.drawImage(
+          preview,
+          cutInfo.x,
+          cutInfo.y,
+          cutInfo.oldWidth,
+          cutInfo.oldHeight,
+          0,
+          0,
+          cutInfo.width,
+          cutInfo.height
+        );
+
+        canvas.toBlob((blob) => {
+          const file = new File([blob], "cut.png", { type: "image/png" });
+        });
+
+        document.body.appendChild(canvas);
+      }
+
+      btn.onclick = cut;
+    </script>
+  </body>
+</html>
