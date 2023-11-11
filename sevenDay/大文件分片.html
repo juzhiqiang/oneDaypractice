@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="file" />
+    <script type="module">
+      const inputFile = document.querySelector('input[type="file"]');
+      inputFile.onchange = async (e) => {
+        const file = e.target.files[0];
+        const chunks = await cutFile(file);
+      };
+
+      const CHUNK_SIZE = 1024 * 1024 * 5;
+      //   开启使用线程数量，最大利用率为机器cpu数量
+      const THEAD_COUNT = navigator.hardwareConcurrency || 4;
+      async function cutFile(file) {
+        return new Promise((resolve, reject) => {
+          const result = [];
+          // 总分片数量
+          const chunkCount = Math.ceil(file.size / CHUNK_SIZE);
+          // 计算子线程需要处理的分片数量
+          const workerChunkCount = Math.ceil(chunkCount / THEAD_COUNT);
+
+          // 标志线程结束
+          let finishCount = 0;
+          for (let i = 0; i < THEAD_COUNT; i++) {
+            // 创建一个新的线程
+            const worker = new Worker("./worker.js", { type: "module" });
+            // 计算每个线程的开始索引位置
+            const startIndex = i * workerChunkCount;
+            let endIndex = startIndex + workerChunkCount;
+            if (endIndex > chunkCount) {
+              endIndex = chunkCount;
+            }
+
+            worker.postMessage({
+              file,
+              CHUNK_SIZE,
+              startIndex,
+              endIndex,
+            });
+
+            worker.onmessage = ({ data }) => {
+              console.log(data);
+              // 保证汇总现场顺序
+              for (let i = startIndex; i < endIndex; i++) {
+                result[i] = data[i - startIndex];
+              }
+              // 结束线程
+              worker.terminate();
+              finishCount++;
+              if (finishCount === chunkCount) {
+                resolve(result);
+              }
+            };
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
