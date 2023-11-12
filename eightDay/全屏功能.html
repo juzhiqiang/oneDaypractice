@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    test
+    <script>
+      // 浏览器api全屏api
+      const functionNames = [
+        "requestFullscreen",
+        "mozRequestFullScreen",
+        "webkitRequestFullScreen",
+        "msRequestFullscreen",
+      ];
+      //   退出全屏api
+      const exctFunctionNames = [
+        "exitFullscreen",
+        "mozCancelFullScreen",
+        "webkitCancelFullScreen",
+        "msExitFullscreen",
+      ];
+      //   查找当前浏览器是否支持哪种全屏api
+      const name = functionNames.find((name) => functionNames in docElm);
+
+      // 进入全屏
+      function fullScreen(docElm) {
+        name && docElm[name]();
+      }
+
+      //   查找当前浏览器是否支持哪种全屏api
+      const exctName = exctFunctionNames.find(
+        (name) => exctFunctionNames in docElm
+      );
+      // 退出全屏
+      function exitFullscreen(docElm) {
+        name && docElm[name]();
+      }
+
+      //   判断当前是否全屏
+      function isFullscreen() {
+        var isFullscreen = false;
+        if (
+          document.fullscreenElement ||
+          document.mozFullScreenElement ||
+          document.webkitFullscreenElement ||
+          document.msFullscreenElement
+        ) {
+          isFullscreen = true;
+        }
+        return isFullscreen;
+      }
+    </script>
+  </body>
+</html>
