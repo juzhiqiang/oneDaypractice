@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+
+        function createCopyText() {
+            if (navigator.clipboard) {
+                // 最新copy api 使用该函数
+                return (text) => {
+                    navigator.clipboard.writeText(text);
+                }
+            } else {
+                // 兼容老版本使用该函数
+                return (text) => {
+                    var input = document.createElement('input');
+                    input.value = text;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(input);
+                }
+            }
+        }
+
+        const copyText = createCopyText();
+
+    </script>
+</body>
+
+</html>
