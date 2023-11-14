@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas></canvas>
+    <script>
+        const canvas = document.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function init() {
+            console.log(window.devicePixelRatio);
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        init();
+
+        function getRandom(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        // 创建点
+        class Point {
+            constructor() {
+                this.r = 6;
+                this.x = getRandom(0, canvas.width - this.r / 2);
+                this.y = getRandom(0, canvas.height - this.r / 2);
+                this.color = 'rgba(211,155,255,1)';
+
+                // 根据时间得到当前位置，根据时间算出新的位置
+                this.xSpeed = 50;
+                this.ySpeed = 50;
+                this.lastDrawTime = 0;
+            }
+
+            draw() {
+                if (this.lastDrawTime) {
+                    const now = Date.now();
+                    const t = (now - this.lastDrawTime) / 1000;
+                    let x = this.x + this.xSpeed * t;
+                    let y = this.y + this.ySpeed * t;
+                    this.x = x;
+                    this.y = y;
+
+                    if (x <= this.r || x >= canvas.width - this.r) {
+                        this.xSpeed = -this.xSpeed;
+                    }
+                    if (y <= this.r || y > canvas.height - this.r) {
+                        this.ySpeed = -this.ySpeed;
+                    }
+                }
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;;
+                ctx.fill();
+                this.lastDrawTime = Date.now();
+            }
+
+        }
+
+        // 图
+        class Grahp {
+            constructor(pointNum = 30, maxDis = 200) {
+                this.points = new Array(pointNum).fill(0).map(() => new Point());
+                this.maxDis = maxDis
+            }
+
+            draw() {
+                requestAnimationFrame(() => {
+                    this.draw();
+                });
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                this.points.forEach(point => {
+                    point.draw();
+
+                    this.points.forEach((point2, index) => {
+                        const d = Math.sqrt(Math.pow(point.x - point2.x, 2) + Math.pow(point.y - point2.y, 2));
+
+                        if (d > this.maxDis) {
+                            return
+                        }
+                        ctx.beginPath();
+                        ctx.moveTo(point.x, point.y);
+                        ctx.lineTo(point2.x, point2.y);
+                        ctx.closePath();
+                        ctx.strokeStyle = `rgba(200,200,200,${Math.random()})`;
+                        ctx.stroke();
+                    })
+                })
+            }
+        }
+
+        const g = new Grahp();
+        g.draw()
+    </script>
+</body>
+
+</html>
