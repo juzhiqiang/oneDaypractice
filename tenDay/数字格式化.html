@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const str = "1000000000000";
+
+        // 正则方式货币格式化
+        const newStr =  str.replace(/\B(?=(\d{3})+$)/g, ",");
+        console.log(newStr);
+
+        // 方式二 web  api
+        const newStr2  = Number(str).toLocaleString();
+        console.log(newStr2);
+    </script>
+</body>
+</html>
