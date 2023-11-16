@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- axios 在线地址 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+
+<body>
+    <script>
+        // 获取token
+        const getToken = () => {
+            return localStorage.getItem('token')
+        }
+
+        // 设置token
+        const setToken = (token) => {
+            localStorage.setItem('token', token)
+        }
+
+        // 设置刷新token
+        const setRefreshToken = (token) => {
+            localStorage.setItem('refreshToken', token)
+        }
+
+
+
+        // 业务场景会有两个token 一个是业务token 一个是刷新token,只有两个同时失效才需要重新登陆
+        const createAxios = axios.create({
+            baseURL: "http://localhost:3000",
+            timeout: 10000,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${getToken()}`
+            }
+        })
+
+        createAxios.interceptors.response.use(async (response) => {
+            if (response.headers.Authorization) {
+                const token = response.headers.Authorization.replace("Bearer ", "")
+                setToken(token)
+                createAxios.defaults.headers.Authorization = `Bearer ${token}`
+            }
+
+            if (response.headers.refreshToken) {
+                const refreshToken = response.headers.refreshToken.replace("Bearer ", "")
+                setRefreshToken(refreshToken)
+            }
+
+            // token失效 刷新token 再重新请求
+            if (response.data.code === 403 && response.config.__isRefresh) {
+                await refreshToken()
+                return createAxios.request(response.config)
+            }
+
+            return response
+        })
+
+        // 刷新token
+        let promise;
+        const refreshToken = async () => {
+            if (promise) {
+                return promise
+            }
+
+            promise = new Promise(async (resolve, reject) => {
+                const refreshToken = localStorage.getItem('refreshToken')
+                const response = await createAxios.post("/refreshToken", {
+                    refreshToken
+                }, {
+                    __isRefresh: true
+                })
+                const token = response.data.token
+                setToken(token)
+                createAxios.defaults.headers.Authorization = `Bearer ${token}`
+                resolve(response)
+
+            })
+
+            promise.finally(() => {
+                promise = null
+            })
+
+        }
+    </script>
+</body>
+
+</html>
