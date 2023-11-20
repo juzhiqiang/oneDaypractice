@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function deepClone(obj) {
+            // 判断拷贝的对象是否存在
+            if (typeof obj !== 'object' || obj === null) {
+                return obj;
+            }
+            // 判断拷贝的对象是数组还是对象
+            let newObj = Array.isArray(obj) ? [] : {};
+            // 是否是原型上内容
+            Object.setPrototypeOf(newObj, Object.getPrototypeOf(obj));
+
+
+            for (var key in obj) {
+                // 原型上数学不直接挂载在对象上
+                if (obj.hasOwnProperty(key)) {
+                    newObj[key] = deepClone(obj[key]);
+
+                }
+            }
+        }   
+    </script>
+</body>
+
+</html>
