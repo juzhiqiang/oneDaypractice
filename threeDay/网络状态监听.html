@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=\, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="network-info"></div>
+    <script>
+        function getNetworkInfo() {
+            let info;
+            if (navigator.onLine) {
+                info = {
+                    type: navigator.connection.effectiveType,
+                    rtt: navigator.connection.rtt,
+                    downlink: navigator.connection.downlink,
+                }
+            } else {
+                info = {
+                    type: "offline"
+                };
+            }
+
+            return info
+        }
+
+        function updateNetworkInfo() {
+            let info = getNetworkInfo();
+            document.querySelector("#network-info").innerText = JSON.stringify(info);
+        }
+
+        updateNetworkInfo();
+        window.addEventListener("online", updateNetworkInfo);
+        window.addEventListener("offline", updateNetworkInfo);
+        navigator.connection.addEventListener("change", updateNetworkInfo);
+    </script>
+</body>
+
+</html>
