@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas></canvas>
+    <script>
+        const canvas = document.querySelector("canvas");
+        const ctx = canvas.getContext("2d", {
+            willReadFrequently: true
+        });
+
+        // 初始化将图片画入canvas
+        function init() {
+            const img = new Image();
+            img.src = "https://img0.baidu.com/it/u=3258994451,3116874502&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500";
+            // 用于解除第三方网站来的图片canvas使用getImageData获取像素点跨域问题
+            img.setAttribute("crossOrigin", "");
+
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            }
+        }
+
+        init()
+
+
+        canvas.addEventListener("click", function (e) {
+            const x = e.offsetX;
+            const y = e.offsetY;
+            // 获取canvas中像素点信息,每四个值表示一个像素点
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            // 获取点击时候颜色
+            const clickColor = getColor(x, y, imgData.data);
+            // 将点击的颜色替换成新的颜色
+            const newColor = {
+                r: 0,
+                g: 0,
+                b: 0,
+                a: 255,
+            }
+            changeColor(x, y, newColor, imgData.data, clickColor);
+            ctx.putImageData(imgData, 0, 0);
+
+        })
+
+        function changeColor(x, y, targetColor, imgData, clickColor) {
+            if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) return
+            // 判断点击位置颜色与周围颜色不同
+            if (isSameColor(clickColor, getColor(x, y, imgData)) > 100) return;
+            if (isSameColor(targetColor, getColor(x, y, imgData)) === 0) return;
+            const index = pointIndex(x, y);
+            // 用这个方法targetCOlor 需要为数组
+            imgData.set([targetColor.r, targetColor.g, targetColor.b, 255], index);
+
+            // imgData[index + 0] = targetColor.r;
+            // imgData[index + 1] = targetColor.g;
+            // imgData[index + 2] = targetColor.b;
+            // imgData[index + 3] = targetColor.a;
+            changeColor(x + 1, y, targetColor, imgData, clickColor)
+            changeColor(x - 1, y, targetColor, imgData, clickColor)
+            changeColor(x, y + 1, targetColor, imgData, clickColor)
+            changeColor(x, y - 1, targetColor, imgData, clickColor)
+        }
+
+        // 判断颜色是否相同
+        function isSameColor(color1, color2) {
+            console.log(color1, color2);
+            return Math.abs(color1.r - color2.r) + Math.abs(color1.g - color2.g) + Math.abs(color1.b - color2.b) + Math.abs(color1.a - color2.a);
+        }
+
+        function pointIndex(x, y) {
+            return (y * canvas.width + x) * 4;
+        }
+
+        function getColor(x, y, imgData) {
+            const index = pointIndex(x, y);
+            return {
+                r: imgData[index],
+                g: imgData[index + 1],
+                b: imgData[index + 2],
+                a: imgData[index + 3],
+            }
+        }
+
+    </script>
+</body>
+
+</html>
