@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url(https://img1.baidu.com/it/u=3712997108,442011921&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1701018000&t=3d4a1b19e4d12888b396edc90ec1ef6d) no-repeat center;
+            background-size: 100%;
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 20px;
+            background: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <button type="color">取色</button>
+    <div class="box"></div>
+    <label for=""></label>
+    <script>
+        const btn = document.querySelector('button');
+        const box = document.querySelector('.box');
+        const label = document.querySelector('label');
+
+        btn.onclick = async () => {
+            const dropper = new EyeDropper();
+            try {
+                const result = await dropper.open();
+                box.style.backgroundColor = label.textContent = result.sRGBHex;
+            } catch (error) {
+                console.log("取色失败")
+            }
+        }
+    </script>
+</body>
+
+</html>
