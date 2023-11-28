@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="file" name="file" id="file">
+    <img src="" alt="">
+    <script>
+
+        const file = document.querySelector('#file');
+        file.onchange = function () {
+            const file = this.files[0];
+            const reader = new FileReader();
+            // 读取文件数据为base64编码
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                const base64 = reader.result;
+                document.querySelector('img').src = base64;
+                // 获取到二进制数据
+                base64toBlob(base64.replace("data:image/jpeg;base64,", ""))
+
+            }
+        }
+
+        function tobase64(data) {
+            return btoa(data);
+        }
+
+        function base64toBlob(base64) {
+            return atob(base64);
+        }
+    </script>
+</body>
+
+</html>
