@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <ul>
+        <li>小蝌蚪找妈妈</li>
+        <li>白龙马</li>
+        <li>生日快乐</li>
+    </ul>
+    <script>
+        const btns = document.querySelectorAll('li');
+        const channel = new BroadcastChannel('music');
+        for (let i = 0; i < btns.length; i++) {
+            btns[i].onclick = function () {
+                const name = this.innerHTML;
+                const n = +localStorage.getItem("music");
+                if (!isNaN(n) && n > 0) {
+                    channel.postMessage(name);
+                } else {
+                    window.open("./bpage.html?name=" + name, "_blank")
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
