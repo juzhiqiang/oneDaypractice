@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const debounce = (callback, time) => {
+            let timer = null;
+            return (...args) => {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(() => {
+                    callback(...args);
+                    timer = null;
+                }, time);
+            }
+        }
+
+        window.addEventListener('resize', debounce((e) => {
+            console.log('变化了', e);
+        }, 200));
+    </script>
+</body>
+
+</html>

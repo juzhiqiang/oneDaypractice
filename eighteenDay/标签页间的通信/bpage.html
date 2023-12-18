@@ -22,6 +22,15 @@
             console.log(e.data);
             document.getElementById('test').innerText = e.data;
         });
+
+        channel.addEventListener('unload', e => {
+            let n = +localStorage.getItem('music');
+            if (isNaN(n)) {
+                n = 1
+            }
+            n--;
+            localStorage.setItem('music', n);
+        });
     </script>
 </body>
 
