@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        // 密码强度正则
+        // 1.必须包含大小写字母和数字
+        // 2.必须包含特殊字符
+        // 3.长度8-16位
+
+        const reg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@,_.])[\da-zA-Z$@,_.]{8,16}$/
+        console.log(reg.test("1aA23@45678"))
+    </script>
+</body>
+
+</html>
